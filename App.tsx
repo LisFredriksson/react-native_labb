@@ -12,36 +12,40 @@ import { store } from './src/stores/store';
 import { ToastProvider } from 'react-native-toast-notifications'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
-const Tab = createBottomTabNavigator();
-const userListStack = createNativeStackNavigator()
+const UserListStack = createNativeStackNavigator()
 
 const UserListStackScreen = () => {
   return (
-    <userListStack.Navigator>
-      <userListStack.Screen name="UserList" component={UserList}/>
-      <userListStack.Screen name="UserInfo" component={UserInfo}/>
-    </userListStack.Navigator>
+    <UserListStack.Navigator>
+      <UserListStack.Screen name="UserList" component={UserList} options={{ title: 'Användare' }}/>
+      <UserListStack.Screen name="UserInfo" component={UserInfo} options={{ title: 'Användarkonto'}}/>
+    </UserListStack.Navigator>
   )
 }
 
-const NaviagtionWrapper = () => {
-      const loggedInAs = useSelector((state: any) => state.auth.loggedInAs)
-      return (
-      <NavigationContainer>
-        <Tab.Navigator screenOptions={{ headerShown: false }}>
-          <Tab.Screen name="UserForm" component={UserForm} options={{ title: 'Lägg till', tabBarIcon:() => (<Icon name="plus" size={30} color="#000"/>), }}/>
-          <Tab.Screen name="UserListStackScreen" component={UserListStackScreen} options={{ title: 'Användare', tabBarIcon:() => (<Icon name="users" size={30} color="#000"/>), }}/>
-          {loggedInAs && <Tab.Screen name="UserInfo" component={UserInfo} options={{ title: `${loggedInAs.firstName}`, tabBarIcon:() => (<Icon name="user" size={30} color="#000"/>),}}/>}
+const Tab = createBottomTabNavigator();
+
+const NavigationWrapper = () => {
+  const loggedInAs = useSelector((state: any) => state.auth.loggedInAs)
+
+  return (
+    <NavigationContainer>
+        <Tab.Navigator>
+          <Tab.Screen name="UserListStack" component={UserListStackScreen} options={{ headerShown: false, tabBarIcon:() => (<Icon name="users" size={30} color="#000"/>) }} />
+          <Tab.Screen name="UserForm" component={UserForm} options={{ title: 'Ny användare' , tabBarIcon:() => (<Icon name="plus" size={30} color="#000"/>) }} />
+          {loggedInAs && (
+            <Tab.Screen name="UserInfo" component={UserInfo} options={{ title: `${loggedInAs.firstName} ${loggedInAs.lastName}` , tabBarIcon:() => (<Icon name="user" size={30} color="#000"/>) }} />
+          )}
         </Tab.Navigator>
       </NavigationContainer>
-      )
+  )
 }
 
 export default function App() {
   return (
     <ToastProvider>
       <Provider store={store}>
-        <NaviagtionWrapper />
+        <NavigationWrapper />
       </Provider>
     </ToastProvider>
   );

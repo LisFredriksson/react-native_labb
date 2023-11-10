@@ -2,6 +2,7 @@ import { StyleSheet, View } from "react-native"
 import { Button, Text } from "@rneui/themed";
 import { logIn, logOut } from "../../stores/slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
+
 export const UserInfo = ({ route, navigation }) => {
     const loggedInAs = useSelector((state: any) => state.auth.loggedInAs);
   const user = route?.params?.user || loggedInAs;
