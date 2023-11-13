@@ -4,6 +4,7 @@ import * as React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack'
 import  UserForm  from './src/screens/UserForm/userForm';
 import  UserList  from './src/screens/UserList/userList';
+import  UpdateForm  from './src/screens/updateForm/updateForm';
 import  UserInfo  from './src/screens/UserInfo/UserInfo';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -36,6 +37,7 @@ const NavigationWrapper = () => {
           {loggedInAs && (
             <Tab.Screen name="UserInfo" component={UserInfo} options={{ title: `${loggedInAs.firstName} ${loggedInAs.lastName}` , tabBarIcon:() => (<Icon name="user" size={30} color="#000"/>) }} />
           )}
+          <Tab.Screen name="UpdateForm" component={UpdateForm} options={{ title: 'Uppdatera' , tabBarIcon:() => (<Icon name="arrows" size={30} color="#000"/>) }} />
         </Tab.Navigator>
       </NavigationContainer>
   )
@@ -48,5 +50,6 @@ export default function App() {
         <NavigationWrapper />
       </Provider>
     </ToastProvider>
+
   );
 }

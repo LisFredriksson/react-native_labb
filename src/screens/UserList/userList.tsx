@@ -42,7 +42,7 @@ const UserList = ({navigation}) => {
 
                             </ListItem.Content>
                             <Button onPress={() => deleteHandler(item)}>Delete</Button>
-                            <Button onPress={() => { navigation.navigate('UserForm', { user: item }) }}>Update</Button>
+                            <Button onPress={() => { navigation.navigate('UpdateForm', { user: item }) }}>Update</Button>
                         </ListItem>
                         )}>
                     </FlatList>
