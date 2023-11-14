@@ -26,19 +26,19 @@ const firebaseBaseQuery = async ({ baseUrl, url, method, body }) => {
       const docRefs = doc(db, url, body.id);
       try {
         await updateDoc(docRefs, body);
-        return { data: `User with ID ${docRefs.id} updated successfully` };
+        return { data: `Post with ID ${docRefs.id} updated successfully` };
       } catch (error) {
         throw new Error(
-          `Failed to update user with ID ${docRefs.id}: ${error.message}`,
+          `Failed to update post with ID ${docRefs.id}: ${error.message}`,
         );
       }
     }
     case "DELETE":
       try {
         await deleteDoc(doc(db, url, body.id));
-        return { data: `User with ID ${body.id} deleted successfully` };
+        return { data: `post with ID ${body.id} deleted successfully` };
       } catch (error) {
-        throw new Error(`Failed to delete user: ${error.message}`);
+        throw new Error(`Failed to delete post: ${error.message}`);
       }
 
     default:
@@ -46,51 +46,51 @@ const firebaseBaseQuery = async ({ baseUrl, url, method, body }) => {
   }
 };
 
-export const usersApi = createApi({
-  reducerPath: "usersApi",
+export const postsApi = createApi({
+  reducerPath: "postsApi",
   baseQuery: firebaseBaseQuery,
-  tagTypes: ["users"],
+  tagTypes: ["posts"],
   endpoints: (builder) => ({
-    createUser: builder.mutation({
-      query: ({ user }) => ({
+    createPost: builder.mutation({
+      query: ({ post }) => ({
         baseUrl: "",
-        url: "users",
+        url: "posts",
         method: "POST", // PUT = modifiera data - DELETE = ta bort data
-        body: user,
+        body: post,
       }),
-      invalidatesTags: ["users"],
+      invalidatesTags: ["posts"],
     }),
-    deleteUser: builder.mutation({
-      query: ({ user }) => ({
+    deletePost: builder.mutation({
+      query: ({ post }) => ({
         baseUrl: "",
-        url: "users",
+        url: "posts",
         method: "DELETE", // PUT = modifiera data - DELETE = ta bort data
-        body: user,
+        body: post,
       }),
     }),
-    updateUser: builder.mutation({
-      query: ({ user }) => ({
+    updatePost: builder.mutation({
+      query: ({ post }) => ({
         baseUrl: "",
-        url: "users",
+        url: "posts",
         method: "PUT", // PUT = modifiera data - DELETE = ta bort data
-        body: user,
+        body: post,
       }),
     }),
-    getUsers: builder.query({
+    getPost: builder.query({
       query: () => ({
         baseUrl: "",
-        url: "users",
+        url: "posts",
         method: "GET",
         body: "",
       }),
-      providesTags: ["users"],
+      providesTags: ["posts"],
     }),
   }),
 });
 
 export const {
-  useCreateUserMutation,
-  useDeleteUserMutation,
-  useGetUsersQuery,
-  useUpdateUserMutation,
-} = usersApi;
+  useCreatePostMutation,
+  useDeletePostMutation,
+  useGetPostQuery,
+  useUpdatePostMutation,
+} = postsApi;
