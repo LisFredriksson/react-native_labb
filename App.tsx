@@ -9,6 +9,8 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import { Provider, useSelector } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
+import PostForm from "./src/screens/PostForm/postForm";
+import PostList from "./src/screens/PostList/postList";
 import UserForm from "./src/screens/UserForm/userForm";
 import UserInfo from "./src/screens/UserInfo/UserInfo";
 import UserList from "./src/screens/UserList/userList";
@@ -71,6 +73,26 @@ const NavigationWrapper = () => {
             options={{
               title: `${loggedInAs.firstName} ${loggedInAs.lastName}`,
               tabBarIcon: () => <Icon name="user" size={30} color="#000" />,
+            }}
+          />
+        )}
+        {loggedInAs && (
+          <Tab.Screen
+            name="PostForm"
+            component={PostForm}
+            options={{
+              title: `Add Post`,
+              tabBarIcon: () => <Icon name="plus" size={30} color="#000" />,
+            }}
+          />
+        )}
+        {loggedInAs && (
+          <Tab.Screen
+            name="PostList"
+            component={PostList}
+            options={{
+              title: `All Posts`,
+              tabBarIcon: () => <Icon name="heart" size={30} color="#000" />,
             }}
           />
         )}

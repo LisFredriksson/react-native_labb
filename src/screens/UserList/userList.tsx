@@ -1,23 +1,48 @@
 import { ListItem, Button } from "@rneui/base";
+import { useDispatch } from "react-redux";
+import { logOut } from "../../stores/slices/authSlice";
 import { FlatList, Text, View, RefreshControl, StyleSheet } from "react-native";
 import { useToast } from "react-native-toast-notifications";
-
+import { useMemo } from "react";
+import {
+  useGetPostQuery,
+  useDeletePostMutation,
+} from "../../stores/api/postsApi";
 import {
   useGetUsersQuery,
   useDeleteUserMutation,
 } from "../../stores/api/usersApi";
 
+
 const UserList = ({ navigation }) => {
   const [deleteUser] = useDeleteUserMutation();
+  const [deletePost] = useDeletePostMutation();
+  const dispatch = useDispatch();
+  const { data: postData } = useGetPostQuery({});
   const toast = useToast();
+  const { data, isLoading, refetch } = useGetUsersQuery({});
+  const sortedUsers = useMemo(() => {
+    if (!data) return [];
+    return [...data].sort((a, b) => {
+      const lastNameA = a.lastName.toUpperCase();
+      const lastNameB = b.lastName.toUpperCase();
+      if (lastNameA < lastNameB) return -1;
+      if (lastNameA > lastNameB) return 1;
+      return 0;
+    });
+  }, [data]);
+
   const deleteHandler = async (user) => {
     try {
       const response = await deleteUser({ user: { id: user.id } });
-
-      // Check if the response is an error or not
       if ("error" in response) {
         console.error("Delete error:", response.error);
       } else {
+        const userPosts = postData.filter((post) => post.userId === user.id);
+        userPosts.forEach(async (post) => {
+          await deletePost({ post: { id: post.id } });
+        });
+        dispatch(logOut())
         toast.show(`${user.firstName} ${user.lastName} raderad!`, {
           type: "warning",
           placement: "top",
@@ -29,7 +54,7 @@ const UserList = ({ navigation }) => {
       console.error("API call error:", error);
     }
   };
-  const { data, isLoading, refetch } = useGetUsersQuery({});
+
   return (
     <View style={styles.mainContainer}>
       {isLoading ? (
@@ -38,7 +63,7 @@ const UserList = ({ navigation }) => {
         <View>
           <Text style={styles.mainHeader}>Användare</Text>
           <FlatList
-            data={data}
+            data={sortedUsers}
             refreshControl={
               <RefreshControl refreshing={isLoading} onRefresh={refetch} />
             }
@@ -80,8 +105,8 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   mainContainer: {
+    paddingBottom: 200,
     backgroundColor: "white",
-    paddingBottom: 50,
   },
 });
 

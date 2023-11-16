@@ -8,7 +8,7 @@ import {
   Keyboard,
 } from "react-native";
 import { useToast } from "react-native-toast-notifications";
-
+// import i18n, {changeLanguage} from "../../../i18n";
 import { useUpdateUserMutation } from "../../stores/api/usersApi";
 
 const UpdateForm = ({ route, navigation }) => {
@@ -103,7 +103,7 @@ const UpdateForm = ({ route, navigation }) => {
             onSubmitEditing={() => handleSubmit()}
           />
           <Button
-            title="Uppdatera"
+            title="Update"
             onPress={() => handleSubmit()}
             loading={isLoading}
           />
