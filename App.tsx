@@ -41,7 +41,6 @@ const UserListStackScreen = () => {
   );
 };
 
-
 const Tab = createBottomTabNavigator();
 
 const NavigationWrapper = () => {
@@ -50,6 +49,7 @@ const NavigationWrapper = () => {
   return (
     <NavigationContainer>
       <Tab.Navigator>
+      {!loggedInAs && (
         <Tab.Screen
           name="UserListStack"
           component={UserListStackScreen}
@@ -58,6 +58,8 @@ const NavigationWrapper = () => {
             tabBarIcon: () => <Icon name="users" size={30} color="#000" />,
           }}
         />
+       )}
+        {!loggedInAs && (
         <Tab.Screen
           name="UserForm"
           component={UserForm}
@@ -66,6 +68,7 @@ const NavigationWrapper = () => {
             tabBarIcon: () => <Icon name="plus" size={30} color="#000" />,
           }}
         />
+        )}
         {loggedInAs && (
           <Tab.Screen
             name="UserInfo"

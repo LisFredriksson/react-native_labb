@@ -3,11 +3,16 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import { persistReducer, persistStore } from "redux-persist";
 
-import { postsApi } from './api/postsApi';
+import { likesApi } from "./api/likesApi";
+import { postsApi } from "./api/postsApi";
 import { usersApi } from "./api/usersApi";
 import authSlice from "./slices/authSlice";
 
-const middlewares = [usersApi.middleware, postsApi.middleware];
+const middlewares = [
+  usersApi.middleware,
+  postsApi.middleware,
+  likesApi.middleware,
+];
 
 if (process.env.NODE_ENV === `development`) {
   const { logger } = require(`redux-logger`);
@@ -25,6 +30,7 @@ const persistedReducer = persistReducer(
   persistConfig,
   combineReducers({
     [usersApi.reducerPath]: usersApi.reducer,
+    [likesApi.reducerPath]: likesApi.reducer,
     [postsApi.reducerPath]: postsApi.reducer,
     auth: authSlice,
   }),

@@ -1,6 +1,5 @@
-import { Input, Button } from "@rneui/themed";
+import { Input, Button, CheckBox, Icon } from "@rneui/themed";
 import { useState, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import {
   View,
   Text,
@@ -9,6 +8,8 @@ import {
   Keyboard,
 } from "react-native";
 import { useToast } from "react-native-toast-notifications";
+import { useSelector } from "react-redux";
+
 import { useCreatePostMutation } from "../../stores/api/postsApi";
 
 const PostForm = (props) => {
@@ -18,8 +19,8 @@ const PostForm = (props) => {
   const [createPost, { isLoading }] = useCreatePostMutation();
   const [postText, setPostText] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [isSelected, setSelection] = useState<boolean>(false);
   const toast = useToast();
-
 
   const handleSubmit = () => {
     if (postText !== "") {
@@ -29,8 +30,9 @@ const PostForm = (props) => {
         post: {
           text: postText,
           createdBy: `${loggedInAs.firstName} ${loggedInAs.lastName}`,
-          createdDate: (new Date().toLocaleDateString()),
+          createdDate: new Date().toLocaleDateString(),
           userId: `${loggedInAs.id}`,
+          private: isSelected,
         },
       })
         .then(() => {
@@ -60,9 +62,23 @@ const PostForm = (props) => {
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={styles.container}>
         <View style={styles.containerHeader}>
-          <Text style={styles.title}>{loggedInAs.firstName} {loggedInAs.lastName}</Text>
+          <Text style={styles.title}>
+            {loggedInAs.firstName} {loggedInAs.lastName}
+          </Text>
         </View>
         <View style={styles.containerForm}>
+          <CheckBox
+            checked={isSelected}
+            title="private"
+            containerStyle={{
+              backgroundColor: "transparent",
+              padding: 0,
+              marginBottom: 10,
+            }}
+            onPress={() => setSelection(!isSelected)}
+            checkedIcon="dot-circle-o"
+            uncheckedIcon="circle-o"
+          />
           <Input
             placeholder="Ny post"
             value={postText}
@@ -105,7 +121,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 30,
     fontWeight: "bold",
-  },
+  }
 });
 
 export default PostForm;

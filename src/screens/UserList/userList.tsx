@@ -1,9 +1,9 @@
-import { ListItem, Button } from "@rneui/base";
-import { useDispatch } from "react-redux";
-import { logOut } from "../../stores/slices/authSlice";
+import { Button } from "@rneui/base";
+import { useMemo, useState } from "react";
 import { FlatList, Text, View, RefreshControl, StyleSheet } from "react-native";
 import { useToast } from "react-native-toast-notifications";
-import { useMemo } from "react";
+import { useDispatch } from "react-redux";
+
 import {
   useGetPostQuery,
   useDeletePostMutation,
@@ -12,7 +12,8 @@ import {
   useGetUsersQuery,
   useDeleteUserMutation,
 } from "../../stores/api/usersApi";
-
+import { logOut } from "../../stores/slices/authSlice";
+import UserItem from "../UserItem/userItem";
 
 const UserList = ({ navigation }) => {
   const [deleteUser] = useDeleteUserMutation();
@@ -21,6 +22,7 @@ const UserList = ({ navigation }) => {
   const { data: postData } = useGetPostQuery({});
   const toast = useToast();
   const { data, isLoading, refetch } = useGetUsersQuery({});
+  const [selectedItems, setSelectedItems] = useState([]);
   const sortedUsers = useMemo(() => {
     if (!data) return [];
     return [...data].sort((a, b) => {
@@ -42,7 +44,7 @@ const UserList = ({ navigation }) => {
         userPosts.forEach(async (post) => {
           await deletePost({ post: { id: post.id } });
         });
-        dispatch(logOut())
+        dispatch(logOut());
         toast.show(`${user.firstName} ${user.lastName} raderad!`, {
           type: "warning",
           placement: "top",
@@ -55,6 +57,23 @@ const UserList = ({ navigation }) => {
     }
   };
 
+  const handleChange = (itemId, isSelected) => {
+    if (isSelected) {
+      setSelectedItems((oldArray) => [...oldArray, itemId]);
+    } else {
+      setSelectedItems((oldArray) =>
+        oldArray.filter((item) => item !== itemId),
+      );
+    }
+  };
+
+  const bulkDeleteHandler = () => {
+    selectedItems.forEach(item => {
+      deleteUser({ user: { id: item } });
+      setSelectedItems([]);
+    });
+  };
+
   return (
     <View style={styles.mainContainer}>
       {isLoading ? (
@@ -62,33 +81,21 @@ const UserList = ({ navigation }) => {
       ) : (
         <View>
           <Text style={styles.mainHeader}>Användare</Text>
+          {selectedItems.length > 1 ? (<Button onPress={bulkDeleteHandler}>Bulk delete</Button>) : ('')}
+
           <FlatList
             data={sortedUsers}
             refreshControl={
               <RefreshControl refreshing={isLoading} onRefresh={refetch} />
             }
             renderItem={({ item }) => (
-              <ListItem
+              <UserItem
                 key={item.id}
-                onPress={() => {
-                  navigation.navigate("UserInfo", { user: item });
-                }}
-              >
-                <ListItem.Content>
-                  <ListItem.Title>
-                    {" "}
-                    {`${item.firstName} ${item.lastName}`}
-                  </ListItem.Title>
-                </ListItem.Content>
-                <Button onPress={() => deleteHandler(item)}>Delete</Button>
-                <Button
-                  onPress={() => {
-                    navigation.navigate("UpdateForm", { user: item });
-                  }}
-                >
-                  Update
-                </Button>
-              </ListItem>
+                item={item}
+                navigation={navigation}
+                onDelete={deleteHandler}
+                onCheckboxChange={handleChange}
+            />
             )}
           />
         </View>
@@ -105,7 +112,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   mainContainer: {
-    paddingBottom: 200,
+    paddingBottom: 300,
     backgroundColor: "white",
   },
 });

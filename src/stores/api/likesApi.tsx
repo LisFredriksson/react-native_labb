@@ -26,19 +26,19 @@ const firebaseBaseQuery = async ({ baseUrl, url, method, body }) => {
       const docRefs = doc(db, url, body.id);
       try {
         await updateDoc(docRefs, body);
-        return { data: `User with ID ${docRefs.id} updated successfully` };
+        return { data: `Like with ID ${docRefs.id} updated successfully` };
       } catch (error) {
         throw new Error(
-          `Failed to update user with ID ${docRefs.id}: ${error.message}`,
+          `Failed to update like with ID ${docRefs.id}: ${error.message}`,
         );
       }
     }
     case "DELETE":
       try {
         await deleteDoc(doc(db, url, body.id));
-        return { data: `User with ID ${body.id} deleted successfully` };
+        return { data: `Like with ID ${body.id} deleted successfully` };
       } catch (error) {
-        throw new Error(`Failed to delete user: ${error.message}`);
+        throw new Error(`Failed to delete like: ${error.message}`);
       }
 
     default:
@@ -46,51 +46,51 @@ const firebaseBaseQuery = async ({ baseUrl, url, method, body }) => {
   }
 };
 
-export const usersApi = createApi({
-  reducerPath: "usersApi",
+export const likesApi = createApi({
+  reducerPath: "likesApi",
   baseQuery: firebaseBaseQuery,
-  tagTypes: ["users"],
+  tagTypes: ["likes"],
   endpoints: (builder) => ({
-    createUser: builder.mutation({
-      query: ({ user }) => ({
+    createLike: builder.mutation({
+      query: ({ like }) => ({
         baseUrl: "",
-        url: "users",
+        url: "likes",
         method: "POST", // PUT = modifiera data - DELETE = ta bort data
-        body: user,
+        body: like,
       }),
-      invalidatesTags: ["users"],
+      invalidatesTags: ["likes"],
     }),
-    deleteUser: builder.mutation({
-      query: ({ user }) => ({
+    deleteLike: builder.mutation({
+      query: ({ like }) => ({
         baseUrl: "",
-        url: "users",
+        url: "likes",
         method: "DELETE", // PUT = modifiera data - DELETE = ta bort data
-        body: user,
+        body: like,
       }),
     }),
-    updateUser: builder.mutation({
-      query: ({ user }) => ({
+    updateLike: builder.mutation({
+      query: ({ like }) => ({
         baseUrl: "",
-        url: "users",
+        url: "likes",
         method: "PUT", // PUT = modifiera data - DELETE = ta bort data
-        body: user,
+        body: like,
       }),
     }),
-    getUsers: builder.query({
+    getLikes: builder.query({
       query: () => ({
         baseUrl: "",
-        url: "users",
+        url: "likes",
         method: "GET",
         body: "",
       }),
-      providesTags: ["users"],
+      providesTags: ["likes"],
     }),
   }),
 });
 
 export const {
-  useCreateUserMutation,
-  useDeleteUserMutation,
-  useGetUsersQuery,
-  useUpdateUserMutation,
-} = usersApi;
+  useCreateLikeMutation,
+  useDeleteLikeMutation,
+  useGetLikesQuery,
+  useUpdateLikeMutation,
+} = likesApi;
