@@ -49,25 +49,25 @@ const NavigationWrapper = () => {
   return (
     <NavigationContainer>
       <Tab.Navigator>
-      {!loggedInAs && (
-        <Tab.Screen
-          name="UserListStack"
-          component={UserListStackScreen}
-          options={{
-            headerShown: false,
-            tabBarIcon: () => <Icon name="users" size={30} color="#000" />,
-          }}
-        />
-       )}
         {!loggedInAs && (
-        <Tab.Screen
-          name="UserForm"
-          component={UserForm}
-          options={{
-            title: "Ny användare",
-            tabBarIcon: () => <Icon name="plus" size={30} color="#000" />,
-          }}
-        />
+          <Tab.Screen
+            name="UserListStack"
+            component={UserListStackScreen}
+            options={{
+              headerShown: false,
+              tabBarIcon: () => <Icon name="users" size={30} color="#000" />,
+            }}
+          />
+        )}
+        {!loggedInAs && (
+          <Tab.Screen
+            name="UserForm"
+            component={UserForm}
+            options={{
+              title: "Ny användare",
+              tabBarIcon: () => <Icon name="plus" size={30} color="#000" />,
+            }}
+          />
         )}
         {loggedInAs && (
           <Tab.Screen

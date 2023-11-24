@@ -68,7 +68,7 @@ const UserList = ({ navigation }) => {
   };
 
   const bulkDeleteHandler = () => {
-    selectedItems.forEach(item => {
+    selectedItems.forEach((item) => {
       deleteUser({ user: { id: item } });
       setSelectedItems([]);
     });
@@ -81,7 +81,11 @@ const UserList = ({ navigation }) => {
       ) : (
         <View>
           <Text style={styles.mainHeader}>Användare</Text>
-          {selectedItems.length > 1 ? (<Button onPress={bulkDeleteHandler}>Bulk delete</Button>) : ('')}
+          {selectedItems.length > 1 ? (
+            <Button onPress={bulkDeleteHandler}>Bulk delete</Button>
+          ) : (
+            ""
+          )}
 
           <FlatList
             data={sortedUsers}
@@ -95,7 +99,7 @@ const UserList = ({ navigation }) => {
                 navigation={navigation}
                 onDelete={deleteHandler}
                 onCheckboxChange={handleChange}
-            />
+              />
             )}
           />
         </View>
@@ -112,7 +116,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   mainContainer: {
-    paddingBottom: 300,
+    paddingBottom: 200,
     backgroundColor: "white",
   },
 });

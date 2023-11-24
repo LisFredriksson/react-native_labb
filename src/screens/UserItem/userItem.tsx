@@ -1,13 +1,11 @@
 import { ListItem, Button } from "@rneui/base";
-import { CheckBox, Icon } from '@rneui/themed';
+import { CheckBox, Icon } from "@rneui/themed";
 import React, { useState, useEffect } from "react";
-
 
 const UserItem = ({ item, navigation, onDelete, onCheckboxChange }) => {
   const [isSelected, setSelection] = useState<boolean>(false);
 
   useEffect(() => {
-    console.log("useEffect - item.id:", item.id, "isSelected:", isSelected);
     onCheckboxChange(item.id, isSelected);
   }, [isSelected]);
 

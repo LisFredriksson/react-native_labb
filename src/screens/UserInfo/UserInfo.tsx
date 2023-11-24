@@ -5,6 +5,8 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { useGetPostQuery } from "../../stores/api/postsApi";
 import { logIn, logOut } from "../../stores/slices/authSlice";
+import { maxHeaderSize } from "http";
+import { $CombinedState } from "@reduxjs/toolkit";
 
 export const UserInfo = ({ route, navigation }) => {
   const loggedInAs = useSelector((state: any) => state.auth.loggedInAs);
@@ -16,8 +18,10 @@ export const UserInfo = ({ route, navigation }) => {
     : [];
   return (
     <View style={styles.container}>
+      <Text style={styles.nameHeader}>{`${user.firstName} ${user.lastName}`}</Text>
+       {loggedInAs?.id === user.id && (
       <View style={styles.infoContainer}>
-        <Text h4>{`${user.firstName} ${user.lastName}`}</Text>
+        <Text style={styles.header}>My Posts</Text>
         <FlatList
           data={userPosts}
           renderItem={({ item }) => (
@@ -31,6 +35,7 @@ export const UserInfo = ({ route, navigation }) => {
           )}
         />
       </View>
+      )}
       <View style={styles.actionsContainer}>
         {loggedInAs?.id === user.id ? (
           <Button
@@ -49,18 +54,28 @@ export const UserInfo = ({ route, navigation }) => {
 };
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     margin: 24,
     backgroundColor: "white",
     borderRadius: 12,
     padding: 36,
   },
   infoContainer: {
-    marginBottom: 24,
+    margin: 24,
   },
   actionsContainer: {
     marginBottom: 24,
+    alignItems: "center",
   },
+  header: {
+    fontSize: 20,
+    paddingLeft: 15,
+    marginBottom: 16,
+  },
+  nameHeader: {
+    fontSize: 30,
+    alignSelf: "center",
+    marginBottom: 16,
+  }
 });
 
 export default UserInfo;

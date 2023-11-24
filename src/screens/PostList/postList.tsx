@@ -2,19 +2,21 @@ import { ListItem, Button } from "@rneui/base";
 import { FlatList, Text, View, RefreshControl, StyleSheet } from "react-native";
 import { useToast } from "react-native-toast-notifications";
 import { useSelector } from "react-redux";
-import Icon from "react-native-vector-icons/FontAwesome";
 
 import {
   useCreateLikeMutation,
-  useDeleteLikeMutation
+  useDeleteLikeMutation,
+  useGetLikesQuery,
 } from "../../stores/api/likesApi";
 import {
   useGetPostQuery,
   useDeletePostMutation,
 } from "../../stores/api/postsApi";
+import LikeItem from "../likeItem/likeItem";
 
 const PostList = ({ navigation }) => {
   const [deletePost] = useDeletePostMutation();
+  const [deleteLike] = useDeleteLikeMutation();
   const toast = useToast();
   const loggedInAs = useSelector((state: any) => state.auth.loggedInAs);
   const [createLike] = useCreateLikeMutation();
@@ -35,12 +37,30 @@ const PostList = ({ navigation }) => {
       console.error("API call error:", error);
     }
   };
+  const deleteLikeHandler = async (likeData) => {
+    try {
+      const response = await deleteLike({ like: { id: likeData.id } });
+      if ("error" in response) {
+        console.error("Delete error:", response.error);
+      } else {
+        toast.show("unliked", {
+          type: "warning",
+          placement: "top",
+          duration: 4000,
+          animationType: "slide-in",
+        });
+        refetchLikes();
+      }
+    } catch (error) {
+      console.error("API call error:", error);
+    }
+  };
   const likeHandler = async (post) => {
     try {
       await createLike({
         like: {
           postId: post.id,
-          userId: post.userId,
+          userId: loggedInAs.id,
         },
       });
     } catch (error) {
@@ -48,6 +68,12 @@ const PostList = ({ navigation }) => {
     }
   };
   const { data, isLoading, refetch } = useGetPostQuery({});
+  const {
+    data: like,
+    isLoading: likesLoading,
+    refetch: refetchLikes,
+  } = useGetLikesQuery({});
+
   return (
     <View style={styles.mainContainer}>
       {isLoading ? (
@@ -57,24 +83,78 @@ const PostList = ({ navigation }) => {
           <FlatList
             data={data}
             refreshControl={
-              <RefreshControl refreshing={isLoading} onRefresh={refetch} />
+              <RefreshControl
+                refreshing={isLoading && likesLoading}
+                onRefresh={() => {
+                  refetch();
+                  refetchLikes();
+                }}
+              />
             }
-            renderItem={({ item }) => (
-              (item.private === false && (
-              <ListItem>
-                <ListItem.Content>
-                  <ListItem.Title>
-                    {`${item.createdBy}: ${item.text}`}
-                  </ListItem.Title>
-                  <ListItem.Title>{`${item.createdDate}`}</ListItem.Title>
-                </ListItem.Content>
-                {loggedInAs.id === item.userId && (
-                  <Button onPress={() => deleteHandler(item)}>Delete</Button>
-                )}
-                <Icon onPress={() => likeHandler(item)} name="heart-o" size={30} color="#000" />
-              </ListItem>
-              ))
-            )}
+            renderItem={({ item }) => {
+              const isLiked =
+                like &&
+                like.some(
+                  (likeItem) =>
+                    item.id === likeItem.postId &&
+                    loggedInAs.id === likeItem.userId,
+                );
+              return (
+                item.private === false ? (
+                  <ListItem key={item.id}>
+                    <ListItem.Content>
+                      <ListItem.Title>
+                        {`${item.createdBy}: ${item.text}`}
+                      </ListItem.Title>
+                      <ListItem.Title>{`${item.createdDate}`}</ListItem.Title>
+                    </ListItem.Content>
+                    {loggedInAs.id === item.userId && (
+                      <Button onPress={() => deleteHandler(item)}>
+                        Delete
+                      </Button>
+                    )}
+                    <LikeItem
+                      post={item}
+                      isLiked={isLiked}
+                      onDeleteLike={() =>
+                        deleteLikeHandler(
+                          like.find(
+                            (likeItem) => likeItem.postId === item.id,
+                          ) || {},
+                        )
+                      }
+                      onLike={() => likeHandler(item)}
+                    />
+                  </ListItem>
+                ) : item.private === true && loggedInAs.id === item.userId ? (
+                  <ListItem key={item.id}>
+                    <ListItem.Content>
+                      <ListItem.Title>
+                        {`${item.createdBy}: ${item.text}`}
+                      </ListItem.Title>
+                      <ListItem.Title>{`${item.createdDate}`}</ListItem.Title>
+                    </ListItem.Content>
+                    {loggedInAs.id === item.userId && (
+                      <Button onPress={() => deleteHandler(item)}>
+                        Delete
+                      </Button>
+                    )}
+                    <LikeItem
+                      post={item}
+                      isLiked={isLiked}
+                      onDeleteLike={() =>
+                        deleteLikeHandler(
+                          like.find(
+                            (likeItem) => likeItem.postId === item.id,
+                          ) || {},
+                        )
+                      }
+                      onLike={() => likeHandler(item)}
+                    />
+                  </ListItem>
+                ) : null
+              );
+            }}
           />
         </View>
       )}
