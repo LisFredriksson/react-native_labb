@@ -133,6 +133,7 @@ const PostList = ({ navigation }) => {
                         {`${item.createdBy}: ${item.text}`}
                       </ListItem.Title>
                       <ListItem.Title>{`${item.createdDate}`}</ListItem.Title>
+                      <ListItem.Title>Private</ListItem.Title>
                     </ListItem.Content>
                     {loggedInAs.id === item.userId && (
                       <Button onPress={() => deleteHandler(item)}>
